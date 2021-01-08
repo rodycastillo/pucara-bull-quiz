@@ -4,13 +4,14 @@
     <h1 class="text-center m-5">Pucará Bull</h1>
     <div class="row justify-content-center">
       <div class="col-6">
-        <form>
+        <form @submit.prevent="handleSubmit">
           <div class="form-group mb-5">
             <label>Agregar 5 gasolineras (separado por comas y sin espacios)</label>
             <input 
               placeholder="Ej. 1,2,3,4,5"
               type="text" 
               class="form-control"
+              v-model="gasolineras"
             />
           </div>
           <div class="form-group mb-5">
@@ -19,14 +20,19 @@
               class="form-control"
               placeholder="Ej. 1,2,3,4,5"
               type="text" 
+              v-model="costos"
             />
           </div>
           <button 
             type="submit"
             class="btn btn-dark btn-lg btn-block"
           >
-            Resultado
+            Calcular
           </button>
+          <div class="alert alert-warning mt-5" role="alert" v-if="resultado">
+            <div>{{ respuesta }}</div>
+            <div> El resultado es: {{ resultado }} </div>
+          </div>
         </form>
       </div>
     </div>
@@ -36,7 +42,31 @@
 </template>
 
 <script>
-export default {}
+import { calcular } from './lib'
+export default {
+  data() {
+    return {
+      gasolineras: '',
+      costos:'',
+      resultado: null,
+    }
+  },
+ methods: {
+    handleSubmit(){
+      const arrayGasolineras = this.gasolineras
+        .split(",")
+        .map((value) => Number(value));
+      const arrayCostos = this.costos.split(",").map((value) => Number(value));
+
+      this.resultado = calcular(arrayGasolineras, arrayCostos)
+    }
+ },
+ computed: {
+    respuesta: function(){
+      return this.resultado === -1 ? "Nunca llegaras" : "Vamos! que si llegamos"
+   }
+ },
+}
 </script>
 
 <style>
